@@ -1,4 +1,4 @@
-package com.claudio.goal.tracker.Models;
+package com.claudio.goal.tracker.models;
 
 import java.util.List;
 
