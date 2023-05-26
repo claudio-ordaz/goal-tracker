@@ -24,6 +24,11 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
+    public boolean existsByUsername(String username) {
+        return userRepository.existsByUsername(username);
+    }
+
+    @Override
     public List<User> getAllUsers() {
         return userRepository.findAll();
     }
@@ -35,15 +40,5 @@ public class UserServiceImpl implements UserService{
         newUser.setPassword(passwordEncoder.encode(user.getPassword()));
 
         userRepository.save(newUser);
-    }
-
-    @Override
-    public void updateUser(User user) {
-
-    }
-
-    @Override
-    public void deleteUser(int id) {
-        userRepository.deleteById(id);
     }
 }

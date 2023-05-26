@@ -4,16 +4,14 @@ import java.util.List;
 
 import com.claudio.goal.tracker.models.User;
 
+
 public interface UserService {
     
     User getUserById(int id);
 
+    boolean existsByUsername(String username);
+
     List<User> getAllUsers();
 
     void createUser(User user);
-
-    void updateUser(User user);
-
-    void deleteUser(int id);
-    
 }
