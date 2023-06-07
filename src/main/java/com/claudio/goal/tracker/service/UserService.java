@@ -8,7 +8,7 @@ import com.claudio.goal.tracker.models.User;
 public interface UserService {
     
     User getUserById(int id);
-
+    
     boolean existsByUsername(String username);
 
     List<User> getAllUsers();

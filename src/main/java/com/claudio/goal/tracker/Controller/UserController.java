@@ -19,10 +19,14 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.claudio.goal.tracker.service.AuthenticationService;
 import com.claudio.goal.tracker.service.UserService;
 
+import lombok.RequiredArgsConstructor;
+
 @RestController
-@RequestMapping("/api/auth")
+@RequestMapping("/api")
+@RequiredArgsConstructor
 public class UserController {
     
     @Autowired
@@ -31,37 +35,24 @@ public class UserController {
     @Autowired
     private AuthenticationManager authenticationManager;
 
+    private final AuthenticationService authService;
+
     @GetMapping("/")
     public String hello() {
         return "Hello World";
     }
 
     @PostMapping("/register")
-    public ResponseEntity<String> register(@RequestBody User user) {
-        if(userService.existsByUsername(user.getUsername())) {
-            return new ResponseEntity<>("Username already exists", HttpStatus.BAD_REQUEST);
-        }
-
-        userService.createUser(user);
-        return new ResponseEntity<>("User registered successfully", HttpStatus.OK);
+    public ResponseEntity<AuthenticationResponse> register(@RequestBody RegisterRequest request) {
+        return ResponseEntity.ok(authService.register(request));
     }
 
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody User user) {
-        Authentication authentication = new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword());
-
-        try {
-            Authentication authenticated = authenticationManager.authenticate(authentication);
-            SecurityContextHolder.getContext().setAuthentication(authenticated);
-
-            return new ResponseEntity<>("User logged in successfully", HttpStatus.OK);
-        } catch (AuthenticationException e) {
-            return new ResponseEntity<>("Invalid username or password", HttpStatus.UNAUTHORIZED);
-        }
-
+    public ResponseEntity<AuthenticationResponse> login(@RequestBody LoginRequest request) {
+        return ResponseEntity.ok(authService.login(request));
     }
 
-    @GetMapping("/users")
+    @GetMapping("/auth/users")
     public String listUsers(Model model) {
         List<User> listUsers = userService.getAllUsers();
         model.addAttribute("listUsers", listUsers);
