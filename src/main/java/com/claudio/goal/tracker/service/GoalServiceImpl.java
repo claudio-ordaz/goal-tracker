@@ -9,10 +9,13 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import com.claudio.goal.tracker.exceptions.AuthorizationException;
+import com.claudio.goal.tracker.exceptions.ResourceNotFoundException;
 import com.claudio.goal.tracker.models.Goal;
 import com.claudio.goal.tracker.models.User;
 import com.claudio.goal.tracker.repository.GoalRepository;
 import com.claudio.goal.tracker.repository.UserRepository;
+import com.mysql.cj.protocol.Security;
 
 @Service
 public class GoalServiceImpl implements GoalService {
@@ -29,7 +32,7 @@ public class GoalServiceImpl implements GoalService {
     }
 
     @Override
-    public List<Goal> getAllGoals() {
+    public List<Goal> getAllGoals() { 
         return goalRepository.findAll();
     }
 
@@ -37,8 +40,6 @@ public class GoalServiceImpl implements GoalService {
     public void createGoal(Goal goal) {
         Authentication currUser = SecurityContextHolder.getContext().getAuthentication();
         
-        System.out.println(currUser.getName());
-
         if(currUser.isAuthenticated()) {
             String username = currUser.getName();
     
@@ -53,8 +54,6 @@ public class GoalServiceImpl implements GoalService {
             newGoal.setProgress(goal.getProgress());
             newGoal.setUser(user);
             
-            System.out.println("User ID: " + user.getId());
-
             goalRepository.save(newGoal);
 
         } else {
@@ -64,8 +63,37 @@ public class GoalServiceImpl implements GoalService {
 
     @Override
     public void updateGoal(Goal goal) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'updateGoal'");
+        Authentication currUser = SecurityContextHolder.getContext().getAuthentication();
+
+        if (currUser.isAuthenticated()) {
+            String username = currUser.getName();
+
+            User user = userRepository.findByUsername(username);
+            
+            if (user == null) {
+                throw new ResourceNotFoundException("User not found");
+            }
+
+            Goal updatedGoal = goalRepository.findByGoalId(goal.getId());
+
+            if (updatedGoal == null) {
+                throw new ResourceNotFoundException("Goal not found");
+            }
+            
+            if(!updatedGoal.getUser().equals(user)) {
+                throw new AuthorizationException("User is not authorized to update goal");
+            }
+
+            updatedGoal.setName(goal.getName());
+            updatedGoal.setDescription(goal.getDescription());
+            updatedGoal.setDue_date(goal.getDue_date());
+            updatedGoal.setProgress(goal.getProgress());
+            updatedGoal.setUser(user);
+
+            goalRepository.save(updatedGoal);
+        } else {
+            throw new AuthenticationCredentialsNotFoundException("Authentication required");
+        }
     }
 
     @Override

@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.claudio.goal.tracker.exceptions.UsernameAlreadyExistsException;
 import com.claudio.goal.tracker.models.User;
 import com.claudio.goal.tracker.repository.UserRepository;
 
@@ -35,7 +36,14 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public void createUser(User user) {
+        String username = user.getUsername();
+
+        if(userRepository.findByUsername(username) != null) {
+            throw new UsernameAlreadyExistsException("Username already exists");
+        }
+        
         User newUser = new User();
+
         newUser.setUsername(user.getUsername());
         newUser.setPassword(passwordEncoder.encode(user.getPassword()));
 
