@@ -11,6 +11,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -25,8 +26,9 @@ import com.claudio.goal.tracker.service.UserService;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/")
 @RequiredArgsConstructor
+@CrossOrigin(origins = "http://localhost:4200")
 public class UserController {
     
     @Autowired
@@ -52,13 +54,17 @@ public class UserController {
         return ResponseEntity.ok(authService.login(request));
     }
 
-    @GetMapping("/auth/users")
-    public String listUsers(Model model) {
-        List<User> listUsers = userService.getAllUsers();
-        model.addAttribute("listUsers", listUsers);
-
-        return "users";
+    @GetMapping("/getUsers")
+    public List<User> getAllUsers(){
+        return userService.getAllUsers();
     }
+    // @GetMapping("/users")
+    // public String listUsers(Model model) {
+    //     List<User> listUsers = userService.getAllUsers();
+    //     model.addAttribute("listUsers", listUsers);
+
+    //     return "users";
+    // }
 
     @GetMapping("/logout")
     public String logout() {

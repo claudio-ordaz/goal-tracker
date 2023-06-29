@@ -27,7 +27,7 @@ public class GoalServiceImpl implements GoalService {
     private UserRepository userRepository;
 
     @Override
-    public Optional<Goal> getGoalById(int id) {
+    public Goal findById(int id) {
         return goalRepository.findById(id);
     }
 
@@ -74,7 +74,7 @@ public class GoalServiceImpl implements GoalService {
                 throw new ResourceNotFoundException("User not found");
             }
 
-            Goal updatedGoal = goalRepository.findByGoalId(goal.getId());
+            Goal updatedGoal = goalRepository.findById(goal.getId());
 
             if (updatedGoal == null) {
                 throw new ResourceNotFoundException("Goal not found");

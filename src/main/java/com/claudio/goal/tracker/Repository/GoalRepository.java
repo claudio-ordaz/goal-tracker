@@ -6,6 +6,6 @@ import com.claudio.goal.tracker.models.Goal;
 
 public interface GoalRepository extends JpaRepository<Goal, Integer> {
 
-    Goal findByGoalId(int id);
+    Goal findById(int id);
     
 }

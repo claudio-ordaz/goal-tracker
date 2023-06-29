@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -17,14 +18,14 @@ import com.claudio.goal.tracker.repository.GoalRepository;
 import com.claudio.goal.tracker.service.GoalService;
 
 @RestController
-@RequestMapping("/api/goal")
+@RequestMapping("/goal")
 public class GoalController {
 
     @Autowired
     private GoalService goalService;
 
-    @Autowired
-    private GoalRepository goalRepository;
+    // @Autowired
+    // private GoalRepository goalRepository;
 
     @PostMapping("/createGoal")
     public ResponseEntity<String> createGoal(@RequestBody Goal goal) {
@@ -33,15 +34,15 @@ public class GoalController {
     }
 
     @GetMapping("/getGoal")
-    public void getGoal(@RequestBody int goalId) {
-        if (goalService.getGoalById(goalId) == null) {
+    public void getGoal(@RequestBody int id) {
+        if (goalService.findById(id) == null) {
             System.out.println("Goal does not exist by ID please enter a valid ID");
         } 
 
-        goalService.getGoalById(goalId);
+        goalService.findById(id);
     }
 
-    @PostMapping("/updateGoal")
+    @PutMapping("/updateGoal")
     public ResponseEntity<?> updateGoal(@RequestBody Goal goal) {
         try {
             goalService.updateGoal(goal);
@@ -54,12 +55,8 @@ public class GoalController {
     }
 
     @PostMapping("/deleteGoal")
-    public ResponseEntity<String> deleteGoal(@RequestBody int goalId) {
-        if (goalRepository.findById(goalId) == null) {
-            return new ResponseEntity<String>("Unable to delete, goal does not exist", HttpStatus.NOT_FOUND);
-        }
-
-        goalService.deleteGoal(goalId);
+    public ResponseEntity<String> deleteGoal(@RequestBody int id) {
+        goalService.deleteGoal(id);
         return new ResponseEntity<String>("Goal successsfully deleted", HttpStatus.OK);
     }
     

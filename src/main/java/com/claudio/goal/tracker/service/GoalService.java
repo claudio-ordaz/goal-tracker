@@ -7,7 +7,7 @@ import com.claudio.goal.tracker.models.Goal;
 
 public interface GoalService {
 
-    Optional<Goal> getGoalById(int id);
+    Goal findById(int id);
 
     List<Goal> getAllGoals();
 
